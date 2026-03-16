@@ -1,60 +1,81 @@
 import { test, expect } from "@playwright/test";
 
-const productsEndpoint = "/api/index.php?endpoint=products";
-const productBody = {
-  name: "Testowy produkt",
-  price: 123.45,
+const endpoint = '/api/index.php?endpoint=products';
+
+const produkt = {
+
+  name: "Zaliczenie produkt testowy",
+  price: 99.99,
   currency: "PLN",
+
 };
 
-test("Test API - GET", async ({ request }) => {
-  const response = await request.get(productsEndpoint);
-  expect(response.status()).toBe(200);
-});
+test('Test API - GET', async ({ request }) => {
+
+    const response = await request.get(endpoint);
+
+    expect(response.status()).toBe(200);
+
+}
+);
+
 
 test("Test API - POST", async ({ request }) => {
-  const response = await request.post(productsEndpoint, { data: productBody });
+
+  const response = await request.post(endpoint, { data: produkt });
+
   const body = await response.json();
 
   expect(response.status()).toBe(201);
-  expect(body.product.name).toBe(productBody.name);
+  expect(body.product.name).toBe(produkt.name);
 });
+
 
 test("Test API - PUT", async ({ request }) => {
-  const response = await request.put(`${productsEndpoint}&id=3`, {
+  const response = await request.put(`${endpoint}&id=7`, {
     data: {
-      name: "Zmieniony Testowy produkt",
-      price: 111.11,
+      name: "Zaliczenie nowy zupdatowany produkt",
+      price: 100.00,
     },
   });
 
   const body = await response.json();
   expect(response.status()).toBe(200);
-  expect(body.product.name).toBe("Zmieniony Testowy produkt");
+
+  expect(body.product.name).toBe("Zaliczenie nowy zupdatowany produkt");
 });
+
+
 
 test("Test API - PATCH", async ({ request }) => {
-  const response = await request.patch(`${productsEndpoint}&id=3`, {
+
+  const response = await request.patch(`${endpoint}&id=7`, {
     data: {
-      price: 222.22,
+      price: 89.99,
+      //name: "Zaliczenie zupdatowany produkt",
     },
   });
 
   const body = await response.json();
   expect(response.status()).toBe(200);
-  expect(body.changes.price).toBe(222.22);
+  expect(body.product.price).toBe(89.99);
+  //expect(body.product.name).toBe("Zaliczenie zupdatowany produkt");
 });
 
+
 test("Test API - DELETE", async ({ request }) => {
-  const createResponse = await request.post(productsEndpoint, {
+
+  const createResponse = await request.post(endpoint, {
+
     data: {
-      name: "Produkt Testowy",
-      price: 123.45,
+      name: "Zaliczenie produkt testowy do usuniecia",
+      price: 50.00,
       currency: "PLN",
     },
   });
+
   const { product } = await createResponse.json();
-  const response = await request.delete(`${productsEndpoint}&id=${product.id}`);
+  const response = await request.delete(`${endpoint}&id=${product.id}`);
 
   expect(response.status()).toBe(204);
 });
